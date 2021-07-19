@@ -1,4 +1,32 @@
 <html>
-    <head></head>
-    <body></body>
+    <head>
+        <script src="./index.js" type="text/javascript"></script>
+        <style>
+            .number {
+                color: red;
+            }
+            .uppercase {
+                color: blue;
+            }
+        </style>
+    </head>
+    <body>
+        <button id="create-session-button">Create Session</button>
+        <p>Session Id: <span id="session-id-span"></span></p>
+
+        <div>
+            <label for="session-id-input">Session id:</label>
+            <input type="text" id="session-id-input"></input>
+        </div>
+        <div>
+            <label for="attempt-input">Attempt:</label>
+            <!-- Prevent submission of negative number -->
+            <input type="text" id="attempt-input" min="0" max="100" step="1"></input>
+        </div>
+
+        <button id="submit-attempt-button">Submit Attempt!</button>
+
+        <p>Lower bound <span id='lower-bound'></span></p>
+        <p>Upper bound <span id='upper-bound'></span></p>
+    </body>
 </html>

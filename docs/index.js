@@ -1,5 +1,5 @@
-// const host = `https://ades-2b25-magic-number.herokuapp.com/`;
-const host = 'http://localhost:8000/';
+const host = `https://ades-2b25-magic-number.herokuapp.com/`;
+// const host = 'http://localhost:8000/';
 
 window.addEventListener('DOMContentLoaded', function () {
     const sessionIdInput = document.getElementById('session-id-input');

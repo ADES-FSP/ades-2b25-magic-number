@@ -1,9 +1,11 @@
+const host = `https://ades-2b25-magic-number.herokuapp.com/`;
+
 window.addEventListener('DOMContentLoaded', function () {
     const sessionIdInput = document.getElementById('session-id-input');
     document.getElementById('create-session-button').addEventListener('click', function () {
         document.getElementById('create-session-button').disabled = true;
 
-        fetch(`http://localhost:8000/`, { method: 'POST' })
+        fetch(host, { method: 'POST' })
             .then(function (response) {
                 document.getElementById('create-session-button').disabled = false;
                 return response.json();
@@ -44,7 +46,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // create url
         // path: /SESSION_ID
         // query: ?attempt=ATTEMPT
-        const url = `http://localhost:8000/${sessionId}?attempt=${attempt}`;
+        const url = `${host}${sessionId}?attempt=${attempt}`;
         fetch(url, { method: 'PUT' })
             .then(function (response) {
                 return response.json();

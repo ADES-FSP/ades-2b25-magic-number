@@ -10,8 +10,10 @@ app.use(cors());
 const sessions = {};
 
 app.post('/', function (req, res) {
-    const sessionId = nanoid(10);
-    sessions[sessionId] = new MagicNumberGame(100);
+    const newSessionId = req.query.new_session_id;
+    const maxNumber = req.query.max_number || 100;
+    const sessionId = newSessionId || nanoid(10);
+    sessions[sessionId] = new MagicNumberGame(maxNumber);
     return res.json({ session_id: sessionId });
 });
 

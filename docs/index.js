@@ -1,11 +1,20 @@
-const host = `https://ades-2b25-magic-number.herokuapp.com/`;
+// const host = `https://ades-2b25-magic-number.herokuapp.com/`;
+const host = 'http://localhost:8000/';
 
 window.addEventListener('DOMContentLoaded', function () {
     const sessionIdInput = document.getElementById('session-id-input');
+    const newSessionIdInput = document.getElementById('new-session-id-input');
+    const maxNumberInput = document.getElementById('max-number-input');
     document.getElementById('create-session-button').addEventListener('click', function () {
         document.getElementById('create-session-button').disabled = true;
 
-        fetch(host, { method: 'POST' })
+        if (!newSessionIdInput.reportValidity() || !maxNumberInput.reportValidity()) {
+            return;
+        }
+        const newSessionId = newSessionIdInput.value;
+        const maxNumber = maxNumberInput.value;
+
+        fetch(`${host}?new_session_id=${newSessionId}&max_number=${maxNumber}`, { method: 'POST' })
             .then(function (response) {
                 document.getElementById('create-session-button').disabled = false;
                 return response.json();

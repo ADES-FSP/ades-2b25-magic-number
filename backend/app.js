@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { nanoid } = require('nanoid');
-const MagicNumberGame = require('../logic/MagicNumberGame');
+const MagicNumberGame = require('./MagicNumberGame');
 const createHttpError = require('http-errors');
 
 const app = express();

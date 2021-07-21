@@ -19,10 +19,10 @@ module.exports = class MagicNumberGame {
     guess(attempt) {
         if (attempt < this.magicNumber) {
             this.numberOfAttempt += 1;
-            this.lowerBound = attempt;
+            this.lowerBound = Math.max(attempt, this.lowerBound);
         } else if (attempt > this.magicNumber) {
             this.numberOfAttempt += 1;
-            this.upperBound = attempt;
+            this.upperBound = Math.min(attempt, this.upperBound);
         } else {
             this.lowerBound = attempt;
             this.upperBound = attempt;

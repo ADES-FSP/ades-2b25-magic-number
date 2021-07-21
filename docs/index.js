@@ -41,6 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const lowerBoundSpan = document.getElementById('lower-bound');
     // 5. get a reference to the upper bound span
     const upperBoundSpan = document.getElementById('upper-bound');
+    const numberOfAttemptSpan = document.getElementById('number-of-attempt');
 
     // add click event listener
     submitAttemptButton.addEventListener('click', function () {
@@ -68,9 +69,31 @@ window.addEventListener('DOMContentLoaded', function () {
                 lowerBoundSpan.innerHTML = json[0];
                 // 2. update the upper bound span
                 upperBoundSpan.innerHTML = json[1];
+
+                numberOfAttemptSpan.innerHTML = json[2];
             })
             .catch(function (err) {
                 alert(err.message);
+            });
+    });
+
+    const refreshButton = document.getElementById('refresh-button');
+    refreshButton.addEventListener('click', function () {
+        const sessionId = sessionIdInput.value;
+        fetch(`${host}${sessionId}`)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (json) {
+                if (json.error) {
+                    throw new Error(json.error);
+                }
+                // 1. update the lower bound span
+                lowerBoundSpan.innerHTML = json[0];
+                // 2. update the upper bound span
+                upperBoundSpan.innerHTML = json[1];
+
+                numberOfAttemptSpan.innerHTML = json[2];
             });
     });
 });

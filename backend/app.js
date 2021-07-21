@@ -17,6 +17,13 @@ app.post('/', function (req, res) {
     return res.json({ session_id: sessionId });
 });
 
+app.get('/:sessionId', function (req, res, next) {
+    const sessionId = req.params.sessionId;
+    const game = sessions[sessionId];
+    const progress = game.progress();
+    return res.json(progress);
+});
+
 // create middleware
 app.put('/:sessionId', function (req, res, next) {
     const sessionId = req.params.sessionId;

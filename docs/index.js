@@ -1,3 +1,4 @@
+let host = 'http://localhost:8000';
 
 function disableButton(button) {
     button.disabled = true;
@@ -63,7 +64,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // create url
         // path: /SESSION_ID
         // query: ?attempt=ATTEMPT
-        const url = `${host}${sessionId}?attempt=${attempt}`;
+        const url = `${host}/${sessionId}?attempt=${attempt}`;
         disableButton(this);
         fetch(url, { method: 'PUT' })
             .then(function (response) {
@@ -110,5 +111,45 @@ window.addEventListener('DOMContentLoaded', function () {
             .finally(() => {
                 enableButton(this);
             });
+    });
+
+    const hostSelect = document.getElementById('host-select');
+    const hostSelectOtherInput = document.getElementById('host-select-others-input');
+    hostSelectOtherInput.addEventListener('change', function () {
+        if (hostSelectOtherInput.disabled) return;
+        console.log(hostSelectOtherInput.value);
+        hostSelectOtherInput.reportValidity();
+        host = hostSelectOtherInput.value;
+    });
+    hostSelect.addEventListener('change', function () {
+        const selectedHost = hostSelect.value;
+        console.log(selectedHost);
+        hostSelectOtherInput.disabled = selectedHost !== 'others';
+        switch (selectedHost) {
+            case 'localhost':
+                host = `http://localhost:8000`;
+                break;
+            case 'heroku':
+                host = `https://ades-2b25-magic-number.herokuapp.com`;
+                break;
+        }
+    });
+
+    const resetDatabaseButton = document.getElementById('reset-database');
+    resetDatabaseButton.addEventListener('click', function () {
+        disableButton(this);
+        fetch(`${host}/init`, { method: 'POST' })
+            .then(function (response) {
+                if (response.status !== 200) {
+                    return response.json().then(function (json) {
+                        throw new Error(json.error || json);
+                    });
+                }
+                alert('Database Reset Successfully');
+            })
+            .catch((error) => {
+                alert(error.message);
+            })
+            .finally(() => enableButton(this));
     });
 });

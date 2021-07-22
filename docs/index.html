@@ -8,35 +8,65 @@
             .uppercase {
                 color: blue;
             }
+
+            body {
+                margin: 0;
+                font-family: sans-serif;
+            }
+
+            #configure-host {
+                width: 100%;
+                padding: 10px;
+                background-color: black;
+                color: white;
+                margin-bottom: 10px;
+            }
+
+            .section {
+                padding: 10px;
+            }
         </style>
     </head>
     <body>
-        <div>
-            <label>New Session id:</label>
-            <input type="text" id="new-session-id-input" maxlength="10" minlength="10" pattern="[0-9a-zA-Z]+" />
+        <div id='configure-host'>
+            <span>Configure Host</span>
+            <select id="host-select">
+                <option value="localhost">localhost:8000</option>
+                <option value="heroku">heroku</option>
+                <option value="others">others</option>
+            </select>
+            <input type="text" id="host-select-others-input" pattern="https?://.*" disabled>
+            <button id="reset-database">reset database</button>
         </div>
-        <div>
-            <label>Max Number:</label>
-            <input type="number" id="max-number-input" min="100" step="1" />
+        <div class="section">
+            <div>
+                <label>New Session id:</label>
+                <input type="text" id="new-session-id-input" maxlength="10" minlength="10" pattern="[0-9a-zA-Z]+" />
+            </div>
+            <div>
+                <label>Max Number:</label>
+                <input type="number" id="max-number-input" min="100" step="1" />
+            </div>
+            <button id="create-session-button">Create Session</button>
+            <p>Session Id: <span id="session-id-span"></span></p>
         </div>
-        <button id="create-session-button">Create Session</button>
-        <p>Session Id: <span id="session-id-span"></span></p>
-
-        <div>
-            <label for="session-id-input">Session id:</label>
-            <input type="text" id="session-id-input"></input>
+        <div class="section">
+            <div>
+                <label for="session-id-input">Session id:</label>
+                <input type="text" id="session-id-input"></input>
+            </div>
+            <div>
+                <label for="attempt-input">Attempt:</label>
+                <!-- Prevent submission of negative number -->
+                <input type="text" id="attempt-input" min="0" max="100" step="1"></input>
+            </div>
+            
+            <button id="submit-attempt-button">Submit Attempt!</button>
+            <button id="refresh-button">Refresh!</button>
+            
+            <p>Lower bound: <span id='lower-bound'></span></p>
+            <p>Upper bound: <span id='upper-bound'></span></p>
+            <p>Number of Attempt: <span id='number-of-attempt'></span></p>
         </div>
-        <div>
-            <label for="attempt-input">Attempt:</label>
-            <!-- Prevent submission of negative number -->
-            <input type="text" id="attempt-input" min="0" max="100" step="1"></input>
-        </div>
-
-        <button id="submit-attempt-button">Submit Attempt!</button>
-        <button id="refresh-button">Refresh!</button>
-
-        <p>Lower bound <span id='lower-bound'></span></p>
-        <p>Upper bound <span id='upper-bound'></span></p>
-        <p>Number of Attempt <span id='number-of-attempt'></span></p>
     </body>
 </html>

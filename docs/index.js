@@ -1,18 +1,22 @@
-const host = `https://ades-2b25-magic-number.herokuapp.com/`;
-// const host = 'http://localhost:8000/';
+
+function disableButton(button) {
+    button.disabled = true;
+}
+function enableButton(button) {
+    button.disabled = false;
+}
 
 window.addEventListener('DOMContentLoaded', function () {
     const sessionIdInput = document.getElementById('session-id-input');
     const newSessionIdInput = document.getElementById('new-session-id-input');
     const maxNumberInput = document.getElementById('max-number-input');
     document.getElementById('create-session-button').addEventListener('click', function () {
-        document.getElementById('create-session-button').disabled = true;
-
         if (!newSessionIdInput.reportValidity() || !maxNumberInput.reportValidity()) {
             return;
         }
         const newSessionId = newSessionIdInput.value;
         const maxNumber = maxNumberInput.value;
+        disableButton(this);
 
         fetch(`${host}?new_session_id=${newSessionId}&max_number=${maxNumber}`, { method: 'POST' })
             .then(function (response) {
@@ -29,6 +33,9 @@ window.addEventListener('DOMContentLoaded', function () {
                     return `<span class='uppercase'>${match}</span>`;
                 });
                 document.getElementById('session-id-span').innerHTML = sessionId;
+            })
+            .finally(() => {
+                enableButton(this);
             });
     });
 
@@ -57,6 +64,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // path: /SESSION_ID
         // query: ?attempt=ATTEMPT
         const url = `${host}${sessionId}?attempt=${attempt}`;
+        disableButton(this);
         fetch(url, { method: 'PUT' })
             .then(function (response) {
                 return response.json();
@@ -74,12 +82,16 @@ window.addEventListener('DOMContentLoaded', function () {
             })
             .catch(function (err) {
                 alert(err.message);
+            })
+            .finally(() => {
+                enableButton(this);
             });
     });
 
     const refreshButton = document.getElementById('refresh-button');
     refreshButton.addEventListener('click', function () {
         const sessionId = sessionIdInput.value;
+        disableButton(this);
         fetch(`${host}${sessionId}`)
             .then(function (response) {
                 return response.json();
@@ -94,6 +106,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 upperBoundSpan.innerHTML = json[1];
 
                 numberOfAttemptSpan.innerHTML = json[2];
+            })
+            .finally(() => {
+                enableButton(this);
             });
     });
 });

@@ -7,6 +7,32 @@ const createHttpError = require('http-errors');
 const app = express();
 app.use(cors());
 
+app.get('/', function (req, res, next) {
+    return res.json({
+        Hello: "This is a Magic Number Game app's backend, head over to https://ades-fsp.github.io/ades-2b25-magic-number/ to access the game",
+        APIs: {
+            'Create Session': {
+                description: 'Creates a new sessions.',
+                method: 'POST',
+                path: '/',
+                queries: {
+                    session_id:
+                        '(Optional) Your proposed session id, rejected if already exists. Defaults to a random 10 digit string',
+                    max_number: '(Optional) The upper bound of the magic number. Defaults to 100',
+                },
+            },
+            'Submit Attempt': {
+                method: 'PUT',
+                path: '/:sessionId',
+            },
+            'Get Progress': {
+                method: 'GET',
+                path: '/:sessionId',
+            },
+        },
+    });
+});
+
 app.post('/init', function (req, res, next) {
     return MagicNumberGame.init()
         .then(function () {
@@ -63,6 +89,8 @@ app.put('/:sessionId', function (req, res, next) {
         })
         .catch(next);
 });
+
+app.use((req, res, next) => next(createHttpError(404, `Unknown resource ${req.method} ${req.originalUrl}`)));
 
 app.use(function (err, req, res, next) {
     console.error(err);

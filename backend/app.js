@@ -57,9 +57,7 @@ app.put('/:sessionId', function (req, res, next) {
         return next(createHttpError(400, 'Attempt is NOT A POSITIVE INTEGER (╯°□°)╯︵ ┻━┻'));
     }
 
-    const game = sessions[sessionId];
-    return game
-        .guess(attempt)
+    return MagicNumberGame.guess(sessionId, attemptNumber)
         .then(function (progress) {
             return res.json(progress);
         })

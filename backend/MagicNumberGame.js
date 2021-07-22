@@ -16,9 +16,8 @@ function getRandomInt(min, max) {
 
 module.exports = class MagicNumberGame {
     static create(sessionId, max) {
-        sessionId = sessionId;
-        upperBound = max;
-        magicNumber = getRandomInt(1, max);
+        const upperBound = max;
+        const magicNumber = getRandomInt(1, max);
         return MagicNumberGame.createGame(sessionId, upperBound, magicNumber);
     }
 
@@ -53,14 +52,15 @@ module.exports = class MagicNumberGame {
     }
 
     static updateBounds(sessionId, attempt) {
+        console.log(sessionId);
         return pool
             .query(
                 `
                 UPDATE magic_number_game_tab 
                 SET 
-                    number_of_attempt = number_of_attempt + 1 when lower_bound <> upper_bound,
-                    lower_bound = LEAST(GREATEST(lower_bound, $1), magic_number)
-                    upper_bound = GREATEST(LEAST(upper_bound, $1), magic_number)
+                    number_of_attempt = CASE WHEN lower_bound != upper_bound THEN number_of_attempt + 1 ELSE number_of_attempt END,
+                    lower_bound = CASE WHEN $1 <= magic_number THEN $1 ELSE lower_bound END,
+                    upper_bound = CASE WHEN $1 >= magic_number THEN $1 ELSE upper_bound END
                 WHERE session_id = $2
                 RETURNING *
             `,

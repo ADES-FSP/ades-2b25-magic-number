@@ -52,7 +52,6 @@ module.exports = class MagicNumberGame {
     }
 
     static updateBounds(sessionId, attempt) {
-        console.log(sessionId);
         return pool
             .query(
                 `

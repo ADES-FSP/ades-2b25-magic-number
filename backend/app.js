@@ -7,21 +7,32 @@ const createHttpError = require('http-errors');
 const app = express();
 app.use(cors());
 
-const sessions = {};
+app.post('/init', function (req, res, next) {
+    return MagicNumberGame.init()
+        .then(function () {
+            return res.sendStatus(200);
+        })
+        .catch(next);
+});
 
-app.post('/', function (req, res) {
+app.post('/', function (req, res, next) {
     const newSessionId = req.query.new_session_id;
     const maxNumber = req.query.max_number || 100;
     const sessionId = newSessionId || nanoid(10);
-    sessions[sessionId] = new MagicNumberGame(maxNumber);
-    return res.json({ session_id: sessionId });
+    return MagicNumberGame.create(sessionId, maxNumber)
+        .then(function () {
+            return res.json({ session_id: sessionId });
+        })
+        .catch(next);
 });
 
 app.get('/:sessionId', function (req, res, next) {
     const sessionId = req.params.sessionId;
-    const game = sessions[sessionId];
-    const progress = game.progress();
-    return res.json(progress);
+    return MagicNumberGame.progress(sessionId)
+        .then(function (progress) {
+            return res.json(progress);
+        })
+        .catch(next);
 });
 
 // create middleware
@@ -47,9 +58,12 @@ app.put('/:sessionId', function (req, res, next) {
     }
 
     const game = sessions[sessionId];
-    const progress = game.guess(attempt);
-    // send the progress as json string in the body of the response.
-    return res.json(progress);
+    return game
+        .guess(attempt)
+        .then(function (progress) {
+            return res.json(progress);
+        })
+        .catch(next);
 });
 
 app.use(function (err, req, res, next) {

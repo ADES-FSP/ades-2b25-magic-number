@@ -1,3 +1,13 @@
+const { Pool } = require('pg');
+const connectionString =
+    'postgres://zvdqqhvfawjiec:b6b7246328753cfb402fd5180d6e97c11572e7a9b7d90ff47a42847cbbe07eed@ec2-23-21-4-7.compute-1.amazonaws.com:5432/d4rua75tj9i9of';
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL || connectionString,
+    ssl: {
+        rejectUnauthorized: false,
+    },
+});
+
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -5,28 +15,61 @@ function getRandomInt(min, max) {
 }
 
 module.exports = class MagicNumberGame {
-    constructor(max) {
-        this.lowerBound = 0;
-        this.upperBound = max;
-        this.numberOfAttempt = 0;
-        this.magicNumber = getRandomInt(1, max);
+    static create(sessionId, max) {
+        sessionId = sessionId;
+        upperBound = max;
+        magicNumber = getRandomInt(1, max);
+        return MagicNumberGame.createGame(sessionId, upperBound, magicNumber);
     }
 
-    progress() {
-        return [this.lowerBound, this.upperBound, this.numberOfAttempt];
+    static createGame(sessionId, upperBound, magicNumber) {
+        return pool.query(
+            `
+                INSERT INTO magic_number_game_tab
+                (session_id, lower_bound, upper_bound, magic_number)
+                VALUES
+                ($1, 0, $2, $3)
+            `,
+            [sessionId, upperBound, magicNumber],
+        );
     }
 
-    guess(attempt) {
-        if (attempt < this.magicNumber) {
-            this.numberOfAttempt += 1;
-            this.lowerBound = Math.max(attempt, this.lowerBound);
-        } else if (attempt > this.magicNumber) {
-            this.numberOfAttempt += 1;
-            this.upperBound = Math.min(attempt, this.upperBound);
-        } else {
-            this.lowerBound = attempt;
-            this.upperBound = attempt;
-        }
-        return this.progress();
+    static extractProgress(result) {
+        const rows = result.rows[0];
+        return [rows.lower_bound, rows.upper_bound, rows.number_of_attempt];
+    }
+
+    static progress(sessionId) {
+        return pool
+            .query(
+                `
+                SELECT lower_bound, upper_bound, number_of_attempt
+                FROM magic_number_game_tab
+                WHERE session_id = $1
+            `,
+                [sessionId],
+            )
+            .then(MagicNumberGame.extractProgress);
+    }
+
+    static updateBounds(sessionId, attempt) {
+        return pool
+            .query(
+                `
+                UPDATE magic_number_game_tab 
+                SET 
+                    number_of_attempt = number_of_attempt + 1 when lower_bound <> upper_bound,
+                    lower_bound = LEAST(GREATEST(lower_bound, $1), magic_number)
+                    upper_bound = GREATEST(LEAST(upper_bound, $1), magic_number)
+                WHERE session_id = $2
+                RETURNING *
+            `,
+                [attempt, sessionId],
+            )
+            .then(MagicNumberGame.extractProgress);
+    }
+
+    static guess(sessionId, attempt) {
+        return MagicNumberGame.updateBounds(sessionId, attempt);
     }
 };

@@ -15,6 +15,22 @@ function getRandomInt(min, max) {
 }
 
 module.exports = class MagicNumberGame {
+    static init() {
+        return pool.query(
+            `
+                DROP TABLE IF EXISTS magic_number_game_tab;
+                CREATE TABLE magic_number_game_tab (
+                    id SERIAL primary key,
+                    session_id VARCHAR not null,
+                    lower_bound int not null,
+                    upper_bound int not null,
+                    magic_number int not null,
+                    number_of_attempt int not null default 0
+                );
+            `,
+        );
+    }
+
     static create(sessionId, max) {
         const upperBound = max;
         const magicNumber = getRandomInt(1, max);
